@@ -1,10 +1,6 @@
 # ssl-checker
 
-Blazing fast SSL endpoints certificate checker!
-
-## Motivation
-
-This is `ssl-checker`, a Go CLI program that I created as a playground project, it is a fast and simple solution to check the SSL certificates of a large number of HTTPS endpoints.
+This is `ssl-checker`, a Go CLI program that I created as a playground project. It is a fast and simple solution to check the SSL certificates of a large number of HTTPS endpoints.
 
 ## Demo
 
@@ -74,7 +70,7 @@ Additionally, you can generate a markdown report of the results by using the E k
 
 I'd like to extend a special thank you to the creators of the following libraries that have made this project possible:
 
-- The team at [charm.sh]() for their awesome libraries and the incredible [vhs]() tool used in the demo.
-- The developers behind [cobra]() and [viper]() for simplifying the process of handling CLI flags and configuration files.
-- The creator of [zerolog]() for providing such a powerful logging solution.
+- The team at [charm.sh](https://charm.sh/) for their awesome libraries and the incredible [vhs](https://github.com/charmbracelet/vhs) tool used in the demo.
+- The developers behind [cobra](https://github.com/spf13/cobra) and [viper](https://github.com/spf13/viper) for simplifying the process of handling CLI flags and configuration files.
+- The creator of [zerolog](https://github.com/rs/zerolog) for providing such a powerful logging solution.
 
