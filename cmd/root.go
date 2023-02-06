@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	version = "0.1.0"
+	version = "0.1.1"
 	logFile = "./ssl-checker.log"
 )
 
@@ -32,6 +32,19 @@ var rootCmd = &cobra.Command{
 	Short:   "ssl-checker",
 	Long:    "ssl-checker is a tool to _quickly_ check certificate details of multiple https targets.",
 
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		cfgFile := filepath.Base(configFile)
+		cfgPath := filepath.Dir(configFile)
+		viper.SetConfigName(cfgFile[:len(cfgFile)-len(filepath.Ext(cfgFile))])
+		viper.AddConfigPath(cfgPath)
+		if err := viper.ReadInConfig(); err != nil {
+			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+				log.Debug().Msg("No config file found")
+			} else {
+				log.Fatal().Msgf("Error while parsing config: %v", err)
+			}
+		}
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		if viper.GetBool("debug") {
 			zerolog.SetGlobalLevel(zerolog.DebugLevel)
@@ -107,28 +120,16 @@ func init() {
 	}
 
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "$HOME/.config/ssl-checker/config.yaml", "Configuration file location")
-	cfgFile := filepath.Base(configFile)
-	cfgPath := filepath.Dir(configFile)
-
-	viper.SetConfigName(cfgFile[:len(cfgFile)-len(filepath.Ext(cfgFile))])
-	viper.AddConfigPath(cfgPath)
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			log.Debug().Msg("No config file found")
-		} else {
-			log.Fatal().Msgf("Error while parsing config: %v", err)
-		}
-	}
-
-	rootCmd.Flags().StringVarP(&envCheck, "environments", "e", "", "Comma delimited string specifying the environments to check")
-
 	rootCmd.PersistentFlags().BoolP("silent", "s", false, "disable ui")
 	rootCmd.PersistentFlags().BoolP("debug", "d", false, "Enable debug log, out will be saved in "+logFile)
 	rootCmd.PersistentFlags().Uint16P("timeout", "t", 10, "Set timeout for SSL check queries")
+	rootCmd.Flags().StringVarP(&envCheck, "environments", "e", "", "Comma delimited string specifying the environments to check")
 
 	viper.BindPFlag("silent", rootCmd.PersistentFlags().Lookup("silent"))
 	viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
 	viper.BindPFlag("timeout", rootCmd.PersistentFlags().Lookup("timeout"))
+
+	rootCmd.AddCommand(versionCmd)
 }
 
 func Execute() {
@@ -143,10 +144,6 @@ var versionCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(version)
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(versionCmd)
 }
 
 // https://github.com/rs/zerolog/issues/150
