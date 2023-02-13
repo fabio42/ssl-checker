@@ -8,6 +8,12 @@ This is `ssl-checker`, a Go CLI program that I created as a playground project. 
     <img width="700" src="demo.gif" />
 </p>
 
+## Installation
+
+```
+$ go install github.com/fabio42/ssl-checker@latest
+```
+
 ## Usage
 
 ```
