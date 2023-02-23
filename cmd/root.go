@@ -160,19 +160,21 @@ func (lw *LevelWriter) WriteLevel(l zerolog.Level, p []byte) (n int, err error) 
 }
 
 func setLogger() error {
+	var logWriter *os.File
+	var err error
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 	if viper.GetBool("debug") {
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	}
 
-	logWriter, err := os.OpenFile(
-		logFile,
-		os.O_APPEND|os.O_CREATE|os.O_WRONLY,
-		0664,
-	)
-	if err != nil {
-		panic(err)
+		logWriter, err = os.OpenFile(
+			logFile,
+			os.O_APPEND|os.O_CREATE|os.O_WRONLY,
+			0664,
+		)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	fileWriter := zerolog.New(zerolog.ConsoleWriter{
