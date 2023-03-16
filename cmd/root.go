@@ -26,7 +26,7 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "ssl-checker [flags] [file-targets <files>|domain-targets <domains>]",
+	Use:   "ssl-checker [flags] [files <files>|domains <domains>]",
 	Short: "ssl-checker",
 	Long:  "ssl-checker is a tool to _quickly_ check certificate details of multiple https targets.",
 
@@ -91,6 +91,28 @@ var rootCmd = &cobra.Command{
 	},
 }
 
+var listEnvs = &cobra.Command{
+	Use:   "environments",
+	Short: "List environments set in configuration file",
+	Run: func(cmd *cobra.Command, args []string) {
+		if viper.IsSet("queries") {
+			queries := viper.Get("queries")
+			envs := make([]string, len(queries.(map[string]interface{})))
+
+			i := 0
+			for env := range queries.(map[string]interface{}) {
+				envs[i] = env
+				i++
+			}
+			fmt.Printf("Available environments: %s.\n", strings.Join(envs, ", "))
+		} else {
+			// Nothing to do
+			log.Debug().Msgf("Empty query... nothing to do")
+			os.Exit(1)
+		}
+	},
+}
+
 func runQueries(fileTargets map[string]string, domainTargets map[string][]string) {
 	if viper.GetBool("silent") {
 		fmt.Fprintln(os.Stderr, "Processing query!")
@@ -126,6 +148,8 @@ func init() {
 	viper.BindPFlag("silent", rootCmd.PersistentFlags().Lookup("silent"))
 	viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
 	viper.BindPFlag("timeout", rootCmd.PersistentFlags().Lookup("timeout"))
+
+	rootCmd.AddCommand(listEnvs)
 }
 
 func Execute() {

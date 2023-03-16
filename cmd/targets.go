@@ -21,10 +21,6 @@ var fileTargetsCmd = &cobra.Command{
 	},
 }
 
-func init() {
-	rootCmd.AddCommand(fileTargetsCmd)
-}
-
 var domainTargetsCmd = &cobra.Command{
 	Use:   "domains [flags] domain1[,domain2,domain3...]",
 	Short: "Run test against provided list of domains",
@@ -40,5 +36,6 @@ var domainTargetsCmd = &cobra.Command{
 }
 
 func init() {
+	rootCmd.AddCommand(fileTargetsCmd)
 	rootCmd.AddCommand(domainTargetsCmd)
 }
