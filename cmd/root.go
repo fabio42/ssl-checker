@@ -17,7 +17,6 @@ import (
 )
 
 const (
-	version = "0.1.1"
 	logFile = "./ssl-checker.log"
 )
 
@@ -27,10 +26,9 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:     "ssl-checker [flags] [file-targets <files>|domain-targets <domains>]",
-	Version: version,
-	Short:   "ssl-checker",
-	Long:    "ssl-checker is a tool to _quickly_ check certificate details of multiple https targets.",
+	Use:   "ssl-checker [flags] [file-targets <files>|domain-targets <domains>]",
+	Short: "ssl-checker",
+	Long:  "ssl-checker is a tool to _quickly_ check certificate details of multiple https targets.",
 
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		cfgFile := filepath.Base(configFile)
@@ -128,22 +126,12 @@ func init() {
 	viper.BindPFlag("silent", rootCmd.PersistentFlags().Lookup("silent"))
 	viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
 	viper.BindPFlag("timeout", rootCmd.PersistentFlags().Lookup("timeout"))
-
-	rootCmd.AddCommand(versionCmd)
 }
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		log.Fatal().Msgf("Whoops. There was an error while executing your CLI '%s'", err)
 	}
-}
-
-var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Show the current version",
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(version)
-	},
 }
 
 // https://github.com/rs/zerolog/issues/150
