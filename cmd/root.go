@@ -9,15 +9,10 @@ import (
 	"github.com/fabio42/ssl-checker/ui"
 
 	tea "github.com/charmbracelet/bubbletea"
-	// "github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
-
-// const (
-// 	logFile = "./ssl-checker.log"
-// )
 
 var (
 	configFile string
@@ -36,7 +31,6 @@ var rootCmd = &cobra.Command{
 		}
 
 		if viper.GetBool("debug") {
-			// zerolog.SetGlobalLevel(zerolog.DebugLevel)
 			log.Warn().Msgf("Debug is enabled, log will be found in %v", logFile)
 		}
 
@@ -147,11 +141,6 @@ func init() {
 	viper.BindPFlag("silent", rootCmd.PersistentFlags().Lookup("silent"))
 	viper.BindPFlag("debug", rootCmd.PersistentFlags().Lookup("debug"))
 	viper.BindPFlag("timeout", rootCmd.PersistentFlags().Lookup("timeout"))
-
-	// err := setLogger(viper.GetBool("debug"))
-	// if err != nil {
-	// 	log.Fatal().Msgf("Error failed to configure logger:", err)
-	// }
 
 	rootCmd.AddCommand(listEnvs)
 }
