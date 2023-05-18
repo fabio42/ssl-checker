@@ -60,7 +60,7 @@ func (i Response) Description() string { return i.Environment }
 
 func TestDomain(domain, env string, timeO int, out chan<- Response) {
 	var resp Response
-	log.Debug().Msgf("SSL query for ", domain)
+	log.Debug().Msgf("SSL query for %v", domain)
 
 	nDialer := net.Dialer{
 		Timeout: time.Duration(timeO) * time.Second,
@@ -91,7 +91,7 @@ func TestDomain(domain, env string, timeO int, out chan<- Response) {
 			SAN:          tlsConn.ConnectionState().PeerCertificates[0].DNSNames,
 			Error:        err,
 		}
-		log.Debug().Msgf("SSL query completed for ", domain)
+		log.Debug().Msgf("SSL query completed for %v", domain)
 	}
 	out <- resp
 }
