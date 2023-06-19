@@ -109,6 +109,6 @@ func Details(i domains.Response) string {
 		}
 		return fmt.Sprintf("%v | %v", i.Issuer.CommonName, dateOutput)
 	} else {
-		return fmt.Sprintf("Error: %v", red.Render(i.KnownError()))
+		return fmt.Sprintf("%s %v", orange.Render("Error:"), red.Render(i.KnownError()))
 	}
 }
