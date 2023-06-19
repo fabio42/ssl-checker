@@ -314,6 +314,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return iDate.Before(jDate)
 		})
+		items = uniqueItems(items)
 		m.list.SetItems(items)
 		time.Sleep(1 * time.Second)
 		return m, nil
@@ -375,8 +376,9 @@ func (m Model) View() string {
 
 // exportResults exposer results to user
 func (m Model) exportResults(stdOut bool) {
-	resp := make([]domains.Response, len(m.list.Items()))
-	for k, v := range m.list.Items() {
+	items := uniqueItems(m.list.Items())
+	resp := make([]domains.Response, len(items))
+	for k, v := range items {
 		resp[k] = v.(domains.Response)
 	}
 	domains.CreateReport(resp, m.cfg.EnvQuery, m.cfg.report, stdOut)
@@ -397,4 +399,25 @@ func (m Model) ListCursorsEnabled(state bool) {
 	m.list.KeyMap.Quit.SetEnabled(state)
 	m.list.KeyMap.ShowFullHelp.SetEnabled(state)
 	m.list.SetShowHelp(state)
+}
+
+func uniqueItems(s []list.Item) []list.Item {
+	encountered := map[string]bool{}
+	uniqueItems := []list.Item{}
+
+	for _, v := range s {
+		log.Debug().Msgf("Duplicate test: %v", v)
+		if !encountered[v.(domains.Response).Domain] {
+			encountered[v.(domains.Response).Domain] = true
+		}
+	}
+
+	for _, v := range s {
+		if encountered[v.(domains.Response).Domain] {
+			uniqueItems = append(uniqueItems, v)
+			encountered[v.(domains.Response).Domain] = false
+		}
+	}
+
+	return uniqueItems
 }

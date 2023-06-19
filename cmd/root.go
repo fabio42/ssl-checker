@@ -16,6 +16,7 @@ import (
 
 var (
 	configFile string
+	noConfig   bool
 	envCheck   string
 )
 
@@ -27,11 +28,12 @@ var rootCmd = &cobra.Command{
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		err := setLogger(viper.GetBool("debug"))
 		if err != nil {
-			log.Fatal().Msgf("Error failed to configure logger:", err)
+			log.Fatal().Msgf("Error failed to configure logger: %v", err)
 		}
 
 		if viper.GetBool("debug") {
 			log.Warn().Msgf("Debug is enabled, log will be found in %v", logFile)
+			log.Debug().Msgf("Debug is enabled, log will be found in %v", logFile)
 		}
 
 		cfgFile := filepath.Base(configFile)
@@ -41,6 +43,7 @@ var rootCmd = &cobra.Command{
 		if err := viper.ReadInConfig(); err != nil {
 			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
 				log.Debug().Msg("No config file found")
+				noConfig = true
 			} else {
 				log.Fatal().Msgf("Error while parsing config: %v", err)
 			}
@@ -48,6 +51,11 @@ var rootCmd = &cobra.Command{
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		envQuery := strings.Split(envCheck, ",")
+
+		if noConfig {
+			cmd.Help()
+			os.Exit(0)
+		}
 
 		if viper.IsSet("queries") {
 			queries := viper.Get("queries")
