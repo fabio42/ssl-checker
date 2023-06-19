@@ -4,9 +4,9 @@ import (
 	"crypto/tls"
 	"crypto/x509/pkix"
 	"fmt"
-	"io/ioutil"
 	"math/big"
 	"net"
+	"os"
 	"sort"
 	"strings"
 	"time"
@@ -39,6 +39,8 @@ func (i Response) KnownError() string {
 			return "certificate SAN don't include domain"
 		case strings.HasSuffix(i.Error.Error(), "no such host"):
 			return "no DNS entry for this host"
+		case strings.HasPrefix(i.Error.Error(), "tls: failed to verify certificate: x509: certificate is valid for"):
+			return "invalid certificate"
 		default:
 			return i.Error.Error()
 		}
@@ -170,7 +172,7 @@ func CreateReport(domains []Response, queries []string, fileName string, stdOut 
 	if stdOut {
 		fmt.Print(file.String())
 	} else {
-		err := ioutil.WriteFile(fileName, []byte(file.String()), 0644)
+		err := os.WriteFile(fileName, []byte(file.String()), 0644)
 		if err != nil {
 			panic(err)
 		}
